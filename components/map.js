@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { Map } from "react-map-gl";
 import { AmbientLight, PointLight, LightingEffect } from "@deck.gl/core";
-import { HexagonLayer } from "@deck.gl/aggregation-layers";
-import { csv } from "d3";
+import { ColumnLayer } from "deck.gl";
+import { csv, scaleQuantile } from "d3";
 import DeckGL from "@deck.gl/react";
+import locations from "../public/data/locations.json";
 
 // Source data CSV
 const DATA_URL =
   "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv"; // eslint-disable-line
+
+const STYLE_URL = "mapbox://styles/niko-dellic/clbia19zk000014s8rguwix36";
 
 const data = csv(DATA_URL).then((data) => {
   const points = data.map((d) => [Number(d.lng), Number(d.lat)]);
@@ -22,13 +25,13 @@ const ambientLight = new AmbientLight({
 const pointLight1 = new PointLight({
   color: [255, 255, 255],
   intensity: 0.8,
-  position: [-0.144528, 49.739968, 80000],
+  position: [22.160414, 41.659566, 80000],
 });
 
 const pointLight2 = new PointLight({
   color: [255, 255, 255],
   intensity: 0.8,
-  position: [-3.807751, 54.104682, 8000],
+  position: [20.160414, 43.659566, 8000],
 });
 
 const lightingEffect = new LightingEffect({
@@ -45,43 +48,51 @@ const material = {
 };
 
 const INITIAL_VIEW_STATE = {
-  longitude: -1.415727,
-  latitude: 52.232395,
-  zoom: 6.6,
+  // center on pristina, kosovo
+  longitude: 21.162914,
+  latitude: 42.659766,
+  zoom: 15.5,
   minZoom: 5,
-  maxZoom: 15,
   pitch: 40.5,
-  bearing: -27,
+  bearing: 45,
 };
-
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
-
-export const colorRange = [
-  [1, 152, 189],
-  [73, 227, 206],
-  [216, 254, 181],
-  [254, 237, 177],
-  [254, 173, 84],
-  [209, 55, 78],
-];
 
 function getTooltip({ object }) {
   if (!object) {
     return null;
   }
-  const lat = object.position[1];
-  const lng = object.position[0];
-  const count = object.points.length;
+  console.log(object.properties.visitors);
 
-  return `\
-    latitude: ${Number.isFinite(lat) ? lat.toFixed(6) : ""}
-    longitude: ${Number.isFinite(lng) ? lng.toFixed(6) : ""}
-    ${count} Accidents`;
+  return `Visitors: ${object.properties.visitors}`;
 }
 
+function colorScale(data, item) {
+  const scale = scaleQuantile()
+    .domain(data.map((d) => d.properties.visitors))
+    .range([
+      [1, 152, 189],
+      [73, 227, 206],
+      [216, 254, 181],
+      [254, 237, 177],
+      [254, 173, 84],
+      [209, 55, 78],
+    ]);
+
+  console.log(scale(item));
+  return scale(item);
+}
+
+function map_range(value, low1, high1, low2, high2) {
+  const remapValue = low2 + ((high2 - low2) * (value - low1)) / (high1 - low1);
+
+  return [remapValue, remapValue, remapValue];
+}
+
+const visitorData = locations.features.map((d) => d.properties.visitors);
+
+const visitorBounds = [Math.min(...visitorData), Math.max(...visitorData)];
+
 export default function DeckMap({
-  mapStyle = MAP_STYLE,
   radius = 1000,
   upperPercentile = 100,
   coverage = 1,
@@ -92,20 +103,30 @@ export default function DeckMap({
   }, []);
 
   const layers = [
-    new HexagonLayer({
-      id: "heatmap",
-      colorRange,
-      coverage,
-      data,
-      elevationRange: [0, 3000],
-      elevationScale: 50,
+    new ColumnLayer({
+      id: "column-layer",
+      data: locations.features,
+      diskResolution: 12,
+      radius: 20,
       extruded: true,
-      getPosition: (d) => d,
-      pickable: true,
-      radius,
-      upperPercentile,
+      getPosition: (d) => d.geometry.coordinates,
+      // getFillColor: (d) =>
+      //   map_range(
+      //     d.properties.visitors,
+      //     visitorBounds[0],
+      //     visitorBounds[1],
+      //     0,
+      //     255
+      //   ),
+      getFillColor: (d) =>
+        colorScale(locations.features, d.properties.visitors),
+      getElevation: (d) => d.properties.visitors,
+      elevationScale: 0.05,
+      opacity: 0.4,
       material,
-
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: [255, 255, 255, 155],
       transitions: {
         elevationScale: 3000,
       },
@@ -122,7 +143,7 @@ export default function DeckMap({
     >
       <Map
         reuseMaps
-        mapStyle={mapStyle}
+        mapStyle={STYLE_URL}
         preventStyleDiffing={true}
         mapboxAccessToken={
           "pk.eyJ1Ijoibmlrby1kZWxsaWMiLCJhIjoiY2w5c3p5bGx1MDh2eTNvcnVhdG0wYWxkMCJ9.4uQZqVYvQ51iZ64yG8oong"

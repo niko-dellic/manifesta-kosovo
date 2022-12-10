@@ -1,0 +1,114 @@
+{
+  "type": "FeatureCollection",
+  "name": "locations",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:EPSG::9140" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 1,
+        "Venue name ": "GrandHotel",
+        "Street name ": "Zahir Pajaziti square",
+        "visitors": 12000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.160118263315095, 42.659910060978703]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 2,
+        "Venue name ": "Z.P square",
+        "Street name ": "Zahir Pajaziti square",
+        "visitors": 5000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.160599295944941, 42.660377427908841]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 3,
+        "Venue name ": "Kino Armat",
+        "Street name ": "Zahir Pajaziti sqaure",
+        "visitors": 7000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.16010186447544, 42.660634343063421]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 4,
+        "Venue name ": "Nat.Librar",
+        "Street name ": null,
+        "visitors": 7000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.162294644799545, 42.65751899758564]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 5,
+        "Venue name ": "Fac Philos",
+        "Street name ": null,
+        "visitors": 1000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.161495291366041, 42.656442579808392]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 6,
+        "Venue name ": "Nat.Galler",
+        "Street name ": null,
+        "visitors": 5000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.164060578698987, 42.65707900962655]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 7,
+        "Venue name ": "Fac.Art",
+        "Street name ": null,
+        "visitors": 1000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.162307389552627, 42.659324967123638]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 8,
+        "Venue name ": "2KorrStree",
+        "Street name ": "2 Korriku Street",
+        "visitors": 10000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.162108813700737, 42.661062083552444]
+      }
+    }
+  ]
+}
